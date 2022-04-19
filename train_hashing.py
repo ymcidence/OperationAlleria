@@ -43,7 +43,7 @@ def main():
     conf.cls_num = 10
     time_string = strftime("%a%d%b%Y-%H%M%S", gmtime())
 
-    result_path = os.path.join(ROOT_PATH, 'result', conf.set_name + 'greedy')
+    result_path = os.path.join(ROOT_PATH, 'result', conf.set_name + '_greedy')
     task_name = conf.task_name
     save_path = os.path.join(result_path, 'model', task_name + '_' + time_string)
     summary_path = os.path.join(result_path, 'log', task_name + '_' + time_string)
