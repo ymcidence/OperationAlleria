@@ -11,6 +11,10 @@ if typing.TYPE_CHECKING:
     # noinspection PyProtectedMember
     from keras.api._v2 import keras
 
+gpus = tf.config.experimental.list_physical_devices('GPU')
+for gpu in gpus:
+    tf.config.experimental.set_memory_growth(gpu, True)
+
 from meta import ROOT_PATH
 from model.greedy_hash import GreedyHash as Model
 from util import eval_tools, data_loader
@@ -39,9 +43,7 @@ def train_step(batch: dict, model: keras.Model, opt: keras.optimizers.Optimizer,
 
 
 def main():
-    gpus = tf.config.experimental.list_physical_devices('GPU')
-    for gpu in gpus:
-        tf.config.experimental.set_memory_growth(gpu, True)
+
     conf = parser.parse_args()
     conf.cls_num = 10
     time_string = strftime("%a%d%b%Y-%H%M%S", gmtime())
