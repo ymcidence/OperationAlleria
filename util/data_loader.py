@@ -38,8 +38,8 @@ def load_cifar(conf) -> typing.Dict[str, tf.data.Dataset]:
         }
 
     return {
-        'train': _batching(data['train'], conf.batch_size, conf.shuffle_size, mapper=_mapper, split='train'),
-        'test': _batching(data['test'], conf.batch_size, conf.shuffle_size, mapper=_mapper, split='test')
+        'train': _batching(data['train'], conf.batch_size, 50000, mapper=_mapper, split='train'),
+        'test': _batching(data['test'], conf.batch_size, 10000, mapper=_mapper, split='test')
     }
 
 
@@ -47,10 +47,10 @@ def _dummy_mapper(x):
     return x
 
 
-def _batching(data: tf.data.Dataset, batch_size, shuffle_size=10000, mapper=_dummy_mapper, split='train'):
+def _batching(data: tf.data.Dataset, batch_size, shuffle_size=10000, mapper=_dummy_mapper, split='train', repeat=False):
+    data = data.repeat() if repeat else data
     if split == 'train':
         return data.shuffle(shuffle_size).map(mapper, num_parallel_calls=AUTOTUNE).batch(batch_size).prefetch(
             buffer_size=AUTOTUNE)
-
     else:
         return data.map(mapper, num_parallel_calls=AUTOTUNE).batch(batch_size).prefetch(buffer_size=AUTOTUNE)
