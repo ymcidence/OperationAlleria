@@ -30,7 +30,7 @@ def load_cifar(conf) -> typing.Dict[str, tf.data.Dataset]:
     data = td.load('cifar10', data_dir=DATA_PATH)
 
     def _mapper(x):
-        image = ip.vgg_caffe_style_preprocessing(x['image'])
+        image = ip.hub_style_preprocessing(x['image'])
         label = x['label']
         return {
             'image': image,
