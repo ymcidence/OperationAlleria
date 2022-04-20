@@ -9,7 +9,7 @@ if typing.TYPE_CHECKING:
     # noinspection PyProtectedMember
     from keras.api._v2 import keras
 
-import tensorflow_hub as th
+# import tensorflow_hub as th
 
 
 @tf.custom_gradient
@@ -26,19 +26,19 @@ class GreedyHash(keras.Model):
     def __init__(self, conf, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.conf = conf
-        self.backbone = th.KerasLayer("https://tfhub.dev/google/imagenet/resnet_v2_50/feature_vector/5",
-                                      trainable=False)
+        # self.backbone = th.KerasLayer("https://tfhub.dev/google/imagenet/resnet_v2_50/feature_vector/5",
+        #                               trainable=False)
 
         self.hash_layer = keras.layers.Dense(conf.code_length)
         self.cls_layer = keras.layers.Dense(conf.cls_num, use_bias=False)
         # self.bn = keras.layers.BatchNormalization()
 
     def call(self, inputs, training=None, mask=None, step=-1):
-        x = inputs['image']
+        x = inputs['feat']
         l = inputs['label']
 
         # noinspection PyCallingNonCallable
-        x = self.backbone(x, training=training)
+        # x = self.backbone(x, training=training)
         cont = self.hash_layer(x, training=training)
         # cont = self.bn(cont, training=training)
         binary = tf.cast(tf.sign(cont), tf.float32)

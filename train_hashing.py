@@ -2,6 +2,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import os
 import tensorflow as tf
+import tensorflow_hub as th
 from tensorflow import keras
 import typing
 from time import gmtime, strftime
@@ -43,7 +44,6 @@ def train_step(batch: dict, model: keras.Model, opt: keras.optimizers.Optimizer,
 
 
 def main():
-
     conf = parser.parse_args()
     conf.cls_num = 10
     time_string = strftime("%a%d%b%Y-%H%M%S", gmtime())
@@ -59,6 +59,7 @@ def main():
         os.makedirs(save_path)
 
     model = Model(conf)
+    backbone = th.KerasLayer("https://tfhub.dev/google/imagenet/resnet_v2_50/feature_vector/5", trainable=False)
     data = data_loader.load_data(conf)
 
     opt = tf.keras.optimizers.Adam(5e-4)
@@ -76,10 +77,14 @@ def main():
     with writer.as_default():
         step = 0
         for epoch in range(conf.max_epoch):
-
             for i, batch in enumerate(data['train']):
                 if (step + i) % 50 == 0:
                     print('epoch: {}, step: {}'.format(epoch, step + i))
+
+                # noinspection PyCallingNonCallable
+                feat = backbone(batch['image'], training=False)
+
+                batch['feat'] = feat
                 train_step(batch, model, opt, step + i)
 
             step = step + i
